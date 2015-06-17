@@ -127,7 +127,7 @@ namespace NodeKinect2
 
         public async Task<object> Open(dynamic input)
         {
-            await this.logCallback("Open");
+            this.logCallback("Open");
             this.kinectSensor = KinectSensor.GetDefault();
 
             if (this.kinectSensor != null)
@@ -141,7 +141,7 @@ namespace NodeKinect2
 
         public async Task<object> OpenDepthReader(dynamic input)
         {
-            await this.logCallback("OpenDepthReader");
+            this.logCallback("OpenDepthReader");
             if (this.depthFrameReader != null)
             {
                 return false;
@@ -149,7 +149,7 @@ namespace NodeKinect2
             this.depthFrameCallback = (Func<object, Task<object>>)input.depthFrameCallback;
 
             this.depthFrameDescription = this.kinectSensor.DepthFrameSource.FrameDescription;
-            await this.logCallback("depth: " + this.depthFrameDescription.Width + "x" + this.depthFrameDescription.Height);
+            this.logCallback("depth: " + this.depthFrameDescription.Width + "x" + this.depthFrameDescription.Height);
 
             //depth data
             this.depthFrameReader = this.kinectSensor.DepthFrameSource.OpenReader();
@@ -160,7 +160,7 @@ namespace NodeKinect2
 
         public async Task<object> OpenColorReader(dynamic input)
         {
-            await this.logCallback("OpenColorReader");
+            this.logCallback("OpenColorReader");
             if (this.colorFrameReader != null)
             {
                 return false;
@@ -168,7 +168,7 @@ namespace NodeKinect2
             this.colorFrameCallback = (Func<object, Task<object>>)input.colorFrameCallback;
 
             this.colorFrameDescription = this.kinectSensor.ColorFrameSource.CreateFrameDescription(ColorImageFormat.Rgba);
-            await this.logCallback("color: " + this.colorFrameDescription.Width + "x" + this.colorFrameDescription.Height);
+            this.logCallback("color: " + this.colorFrameDescription.Width + "x" + this.colorFrameDescription.Height);
 
             this.colorFrameReader = this.kinectSensor.ColorFrameSource.OpenReader();
             this.colorFrameReader.FrameArrived += this.ColorReader_ColorFrameArrived;
@@ -179,7 +179,7 @@ namespace NodeKinect2
 
         public async Task<object> OpenInfraredReader(dynamic input)
         {
-            await this.logCallback("OpenInfraredReader");
+            this.logCallback("OpenInfraredReader");
             if (this.infraredFrameReader != null)
             {
                 return false;
@@ -187,7 +187,7 @@ namespace NodeKinect2
             this.infraredFrameCallback = (Func<object, Task<object>>)input.infraredFrameCallback;
 
             this.infraredFrameDescription = this.kinectSensor.InfraredFrameSource.FrameDescription;
-            await this.logCallback("infrared: " + this.infraredFrameDescription.Width + "x" + this.infraredFrameDescription.Height);
+            this.logCallback("infrared: " + this.infraredFrameDescription.Width + "x" + this.infraredFrameDescription.Height);
 
             //depth data
             this.infraredFrameReader = this.kinectSensor.InfraredFrameSource.OpenReader();
@@ -198,7 +198,7 @@ namespace NodeKinect2
 
         public async Task<object> OpenLongExposureInfraredReader(dynamic input)
         {
-            await this.logCallback("OpenLongExposureInfraredReader");
+            this.logCallback("OpenLongExposureInfraredReader");
             if (this.longExposureInfraredFrameReader != null)
             {
                 return false;
@@ -206,7 +206,7 @@ namespace NodeKinect2
             this.longExposureInfraredFrameCallback = (Func<object, Task<object>>)input.longExposureInfraredFrameCallback;
 
             this.longExposureInfraredFrameDescription = this.kinectSensor.LongExposureInfraredFrameSource.FrameDescription;
-            await this.logCallback("longExposureInfrared: " + this.longExposureInfraredFrameDescription.Width + "x" + this.longExposureInfraredFrameDescription.Height);
+            this.logCallback("longExposureInfrared: " + this.longExposureInfraredFrameDescription.Width + "x" + this.longExposureInfraredFrameDescription.Height);
 
             //depth data
             this.longExposureInfraredFrameReader = this.kinectSensor.LongExposureInfraredFrameSource.OpenReader();
@@ -217,7 +217,7 @@ namespace NodeKinect2
 
         public async Task<object> OpenBodyReader(dynamic input)
         {
-            await this.logCallback("OpenBodyReader");
+            this.logCallback("OpenBodyReader");
             if (this.bodyFrameReader != null)
             {
                 return false;
@@ -490,11 +490,12 @@ namespace NodeKinect2
                         IDictionary<String, Object> jsJoints = new Dictionary<String, Object>();
                         foreach (JointType jointType in joints.Keys)
                         {
-                            DepthSpacePoint depthSpacePoint = this.coordinateMapper.MapCameraPointToDepthSpace(joints[jointType].Position);
+//                            DepthSpacePoint depthSpacePoint = this.coordinateMapper.MapCameraPointToDepthSpace(joints[jointType].Position);
+                            var point = this.coordinateMapper.MapCameraPointToColorSpace(joints[jointType].Position);
                             jsJoints[jointType.ToString()] = new
                             {
-                                x = depthSpacePoint.X,
-                                y = depthSpacePoint.Y
+                                x = point.X,
+                                y = point.Y
                             };
                         }
                         var jsBody = new
