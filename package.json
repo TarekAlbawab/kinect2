@@ -1,6 +1,6 @@
 {
   "name": "electron-kinect2",
-  "version": "0.0.12",
+  "version": "0.0.13",
   "description": "Electron library to access the kinect 2 data from the official MS SDK",
   "main": "kinect2.js",
   "scripts": {

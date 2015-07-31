@@ -495,7 +495,12 @@ namespace NodeKinect2
                             jsJoints[jointType.ToString()] = new
                             {
                                 x = point.X,
-                                y = point.Y
+                                y = point.Y,
+                                v = new {
+                                    x = joints[jointType].Position.X,
+                                    y = joints[jointType].Position.Y,
+                                    z = joints[jointType].Position.Z
+                                }
                             };
                         }
                         var jsBody = new
