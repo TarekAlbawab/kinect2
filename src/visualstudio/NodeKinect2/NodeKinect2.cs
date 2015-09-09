@@ -496,11 +496,20 @@ namespace NodeKinect2
                             {
                                 x = point.X,
                                 y = point.Y,
-                                v = new {
+                                position = new
+                                {
                                     x = joints[jointType].Position.X,
                                     y = joints[jointType].Position.Y,
                                     z = joints[jointType].Position.Z
-                                }
+                                },
+                                orientation = new
+                                {
+                                    x = body.JointOrientations[jointType].Orientation.X,
+                                    y = body.JointOrientations[jointType].Orientation.Y,
+                                    z = body.JointOrientations[jointType].Orientation.Z,
+                                    w = body.JointOrientations[jointType].Orientation.W
+                                },
+                                trackingState = joints[jointType].TrackingState
                             };
                         }
                         var jsBody = new
