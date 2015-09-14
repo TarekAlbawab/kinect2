@@ -6,6 +6,10 @@ var edge = require('electron-edge2'),
 
 function Kinect2(options) {
 	events.EventEmitter.call(this);
+	
+	options = _.assign({
+	  includeOrientation: false
+	}, options);
 
 	var dllProperties = {
 		assemblyFile: __dirname + path.sep + 'NodeKinect2.dll',
@@ -22,9 +26,9 @@ function Kinect2(options) {
 	this.edge.openBodyReader = edge.func(_.assign({ methodName: 'OpenBodyReader' }, dllProperties));
 	this.edge.close = edge.func(_.assign({ methodName: 'Close' }, dllProperties));
 
-	this.edge.create({
+	this.edge.create(_.assign(options, {
 		logCallback: this.logCallback.bind(this)
-	}, true);
+	}), true);
 }
 
 util.inherits(Kinect2, events.EventEmitter);

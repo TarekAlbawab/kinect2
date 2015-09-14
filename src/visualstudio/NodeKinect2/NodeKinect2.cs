@@ -4,6 +4,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Windows;
+using Microsoft.CSharp.RuntimeBinder;
 
 namespace NodeKinect2
 {
@@ -85,6 +86,7 @@ namespace NodeKinect2
         private FrameDescription longExposureInfraredFrameDescription = null;
         private byte[] longExposureInfraredPixels = null;
         private bool processingLongExposureInfraredFrame = false;
+        private bool includeOrientation = false;
 
         /// <summary>
         /// Maximum value (as a float) that can be returned by the InfraredFrame
@@ -117,11 +119,21 @@ namespace NodeKinect2
         private Func<object, Task<object>> colorFrameCallback;
         private Func<object, Task<object>> infraredFrameCallback;
         private Func<object, Task<object>> longExposureInfraredFrameCallback;
-        
+
 
         public NodeKinect(dynamic input)
         {
             this.logCallback = (Func<object, Task<object>>)input.logCallback;
+
+            try
+            {
+                includeOrientation = input.includeOrientation;
+            }
+            catch (RuntimeBinderException)
+            {
+                // input.includeOrientation does not exist. Ignore and continue... 
+            }
+
             this.logCallback("Created NodeKinect Instance");
         }
 
@@ -445,7 +457,7 @@ namespace NodeKinect2
             int len = (int)(frameDataSize / bytesPerPixel);
             for (int i = 0; i < len; ++i)
             {
-                this.infraredPixels[i] = (byte) (0xff * Math.Min(InfraredOutputValueMaximum, (((float)lframeData[i] / InfraredSourceValueMaximum * InfraredSourceScale) * (1.0f - InfraredOutputValueMinimum)) + InfraredOutputValueMinimum));
+                this.infraredPixels[i] = (byte)(0xff * Math.Min(InfraredOutputValueMaximum, (((float)lframeData[i] / InfraredSourceValueMaximum * InfraredSourceScale) * (1.0f - InfraredOutputValueMinimum)) + InfraredOutputValueMinimum));
             }
         }
 
@@ -490,8 +502,22 @@ namespace NodeKinect2
                         IDictionary<String, Object> jsJoints = new Dictionary<String, Object>();
                         foreach (JointType jointType in joints.Keys)
                         {
-//                            DepthSpacePoint depthSpacePoint = this.coordinateMapper.MapCameraPointToDepthSpace(joints[jointType].Position);
+ //                            DepthSpacePoint depthSpacePoint = this.coordinateMapper.MapCameraPointToDepthSpace(joints[jointType].Position);
                             var point = this.coordinateMapper.MapCameraPointToColorSpace(joints[jointType].Position);
+
+                            object jointOrientation = null;
+                            if (includeOrientation)
+                            {
+                                var orientation = body.JointOrientations[jointType].Orientation;
+                                jointOrientation = new
+                                {
+                                    x = orientation.X,
+                                    y = orientation.Y,
+                                    z = orientation.Z,
+                                    w = orientation.W
+                                };
+                            }
+
                             jsJoints[jointType.ToString()] = new
                             {
                                 x = point.X,
@@ -502,15 +528,10 @@ namespace NodeKinect2
                                     y = joints[jointType].Position.Y,
                                     z = joints[jointType].Position.Z
                                 },
-                                orientation = new
-                                {
-                                    x = body.JointOrientations[jointType].Orientation.X,
-                                    y = body.JointOrientations[jointType].Orientation.Y,
-                                    z = body.JointOrientations[jointType].Orientation.Z,
-                                    w = body.JointOrientations[jointType].Orientation.W
-                                },
+                                orientation = jointOrientation,
                                 trackingState = joints[jointType].TrackingState
                             };
+
                         }
                         var jsBody = new
                         {
