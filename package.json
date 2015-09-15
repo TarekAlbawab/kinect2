@@ -1,6 +1,6 @@
 {
   "name": "electron-kinect2",
-  "version": "0.0.15",
+  "version": "0.0.16",
   "description": "Electron library to access the kinect 2 data from the official MS SDK",
   "main": "kinect2.js",
   "scripts": {
@@ -22,7 +22,7 @@
   },
   "homepage": "https://github.com/wouterverweirder/kinect2",
   "dependencies": {
-    "electron-edge2": "~2.3.0-pre",
+    "electron-edge2": "~2.5.0-pre",
     "lodash": "^2.4.1"
   }
 }
