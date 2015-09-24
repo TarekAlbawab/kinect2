@@ -12,7 +12,7 @@ function Kinect2(options) {
 	}, options);
 
 	var dllProperties = {
-		assemblyFile: __dirname + path.sep + 'NodeKinect2.dll',
+		assemblyFile: (__dirname + path.sep + 'NodeKinect2.dll').replace('app.asar', 'app.asar.unpacked'),
 	    typeName: 'NodeKinect2.Startup'
 	};
 
