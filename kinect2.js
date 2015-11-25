@@ -1,4 +1,4 @@
-var edge = require('electron-edge2'),
+var edge = require('edge-atom-shell'),
 	path = require('path')
 	events = require('events'),
 	_ = require('lodash'),
